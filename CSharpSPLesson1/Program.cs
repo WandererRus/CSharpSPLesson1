@@ -8,6 +8,12 @@ namespace CSharpSPLesson1
     {
         [DllImport("user32.dll")]
         public static extern int MessageBox(IntPtr hWnd, string lpText, string lpCaption, uint uType);
+        [DllImport("user32.dll", EntryPoint = "FindWindow")]
+        public static extern IntPtr FindWindow(string lpClassName, string lpWindowName);
+        [DllImport("user32.dll", EntryPoint = "FindWindowEx")]
+        public static extern IntPtr FindWindowEx(string lpClassName, string lpWindowName);
+        [DllImport("user32.dll")]
+        public static extern long SendMessage(IntPtr hWnd,  uint Msg,  int wParam,  string lParam);
 
         const uint MB_ICONWARNING = 0x030;
         const uint MB_CANCELTRYCONTINUE = 0x06;
@@ -23,8 +29,27 @@ namespace CSharpSPLesson1
         }
         static void Main(string[] args)
         {
-            //2 - cancel, yes - 6, no - 7            
-            int minNumber = 0;
+            Process process = new Process();
+            IntPtr mainNotepadWindow = IntPtr.Zero;
+            string caption = "";
+            Process[] processes = Process.GetProcesses();
+            foreach (Process p in processes)
+            {
+                if (p.ProcessName == "notepad")
+                {
+                    process = p;
+                    caption = p.MainWindowTitle;
+                    mainNotepadWindow = p.MainWindowHandle;
+                }
+            }
+            IntPtr ptr = FindWindow("notepad", caption);
+            //SendMessage(ptr, 0x0010, 0, ""); закрыть блокнот Selftask3
+            SendMessage(ptr, 0x000C, 0, "Новый заголовок");
+            SendMessage(mainNotepadWindow, 0x000C, 0, "Привет, мир блокнота");
+            Console.ReadLine();
+
+            //2 - cancel, yes - 6, no - 7          SelfTask1-2  
+            /*int minNumber = 0;
             int maxNumber = 100;
             Random random= new Random();
             int result = random.Next(minNumber, maxNumber);
@@ -65,6 +90,9 @@ namespace CSharpSPLesson1
             Process process = new Process();
             process.StartInfo = new ProcessStartInfo("notepad.exe");
             Console.WriteLine(process.Handle);*/
+
+
+
 
         }
     }
